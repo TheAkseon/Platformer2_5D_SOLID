@@ -1,28 +1,38 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Assets.Scripts.Player
 {
+    [RequireComponent(typeof(IMovable))]
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private IPlayerView _playerView;
+        private IMovable _movable;
+        private float _horizontalInput;
 
-        private IPlayerState _currentState;
+        private const string HorizontalInput = "Horizontal";
 
         private void Start()
         {
-            _currentState = new PlayerWalkingState(this);
-            _playerView = GetComponent<PlayerView>();
+            _movable = GetComponent<IMovable>();
         }
 
         private void Update()
         {
-            _currentState.HandleInput();
-            _currentState.Update();
+            MoveInput();
         }
 
-        public void ChangeState(IPlayerState newState)
+        private void FixedUpdate()
         {
-            _currentState = newState;
+            MovePlayer();
+        }
+
+        private void MoveInput()
+        {
+            _horizontalInput = Input.GetAxisRaw(HorizontalInput);
+        }
+
+        private void MovePlayer()
+        {
+            _movable.Move(_horizontalInput);
         }
     }
 }
